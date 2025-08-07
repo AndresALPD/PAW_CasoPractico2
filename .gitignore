@@ -1,0 +1,22 @@
+# Ignore build output
+*/bin/
+*/obj/
+
+# Ignore user-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Ignore VS and JetBrains folders
+.vs/
+.idea/
+v17/
+
+# Ignore VS Code
+.vscode/
+
+# Ignore other system files
+*.log
+*.DS_Store
+Thumbs.db
