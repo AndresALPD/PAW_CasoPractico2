@@ -1,0 +1,174 @@
+﻿@model IEnumerable<PAWCP2.Models.Users>
+
+@{
+    ViewData["Title"] = "Usuarios";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<h1>Gestión de Usuarios</h1>
+
+@if (ViewData["Error"] != null)
+{
+    <div class="alert alert-danger">@ViewData["Error"]</div>
+}
+@if (ViewData["Success"] != null)
+{
+    <div class="alert alert-success">@ViewData["Success"]</div>
+}
+
+<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createModal">
+    + Nuevo Usuario
+</button>
+
+<table class="table table-striped table-bordered align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Id</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Nombre Completo</th>
+            <th>Activo</th>
+            <th>Creado el</th> 
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Where(u => u.IsActive))
+        {
+            <tr>
+                <td>@user.UserId</td>
+                <td>@user.Username</td>
+                <td>@user.Email</td>
+                <td>@user.FullName</td>
+                <td>@(user.IsActive ? "Sí" : "No")</td>
+                <td>@user.CreatedAt.ToString("yyyy-MM-dd")</td>
+                <td>
+                    <button class="btn btn-sm btn-warning me-1 btn-edit"
+                            data-bs-toggle="modal" data-bs-target="#editModal"
+                            data-userid="@user.UserId"
+                            data-username="@user.Username"
+                            data-email="@user.Email"
+                            data-fullname="@user.FullName"
+                            data-isactive="@(user.IsActive ? "true" : "false")"
+                            data-createdat="@user.CreatedAt.ToString("yyyy-MM-ddTHH:mm")"
+                            >
+                        Editar
+                    </button>
+
+                    <form asp-action="Delete" asp-route-id="@user.UserId" method="post" style="display:inline-block" onsubmit="return confirm('¿Eliminar usuario?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal Crear -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Create" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createModalLabel">Crear Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="createUsername" class="form-label">Username *</label>
+                        <input type="text" class="form-control" id="createUsername" name="Username" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="createEmail" class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="createEmail" name="Email" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="createFullName" class="form-label">Nombre Completo</label>
+                        <input type="text" class="form-control" id="createFullName" name="FullName" />
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="createIsActive" name="IsActive" value="true" checked />
+                        <label class="form-check-label" for="createIsActive">Activo</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Crear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Edit" method="post">
+                <input type="hidden" id="editUserId" name="UserId" />
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Editar Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editUsername" class="form-label">Username *</label>
+                        <input type="text" class="form-control" id="editUsername" name="Username" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEmail" class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="editEmail" name="Email" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="editFullName" class="form-label">Nombre Completo</label>
+                        <input type="text" class="form-control" id="editFullName" name="FullName" />
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="editIsActive" name="IsActive" value="true" />
+                        <label class="form-check-label" for="editIsActive">Activo</label>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCreatedAt" class="form-label">Creado</label>
+                        <input type="datetime-local" class="form-control" id="editCreatedAt" name="CreatedAt" readonly />
+                    </div>
+                    <div class="mb-3">
+                        <label for="editLastLogin" class="form-label">Último Login</label>
+                        <input type="datetime-local" class="form-control" id="editLastLogin" name="LastLogin" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Cuando abres el modal de editar, cargar los datos en el formulario
+    document.querySelectorAll('.btn-edit').forEach(button => {
+        button.addEventListener('click', () => {
+            const userId = button.getAttribute('data-userid');
+            const username = button.getAttribute('data-username');
+            const email = button.getAttribute('data-email');
+            const fullName = button.getAttribute('data-fullname');
+            const isActive = button.getAttribute('data-isactive') === "true";
+            const createdAt = button.getAttribute('data-createdat');
+            const lastLogin = button.getAttribute('data-lastlogin');
+
+            document.getElementById('editUserId').value = userId;
+            document.getElementById('editUsername').value = username;
+            document.getElementById('editEmail').value = email;
+            document.getElementById('editFullName').value = fullName;
+            document.getElementById('editIsActive').checked = isActive;
+
+            // Para datetime-local, si está vacío poner cadena vacía para limpiar campo
+            document.getElementById('editCreatedAt').value = createdAt ?? '';
+            document.getElementById('editLastLogin').value = lastLogin ?? '';
+        });
+    });
+</script>

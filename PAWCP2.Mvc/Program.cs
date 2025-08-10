@@ -1,15 +1,23 @@
+using PAWCP2.Repositories;
+using PAWCP2.Core.Manager; // Asegúrate que aquí estén IUserBusiness y UserBusiness
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Registrar servicios para inyección
 builder.Services.AddControllersWithViews();
+
+// Registro de repositorio
+builder.Services.AddScoped<IRepositoryUser, RepositoryUser>();
+
+// Registro del manager (servicio de negocio)
+builder.Services.AddScoped<IUserBusiness, BusinessUser>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Middleware pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

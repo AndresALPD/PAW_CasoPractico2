@@ -20,7 +20,7 @@ public partial class PAWCP2DbContext : DbContext
 
     public virtual DbSet<Role> Roles { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<Users> Users { get; set; }
 
     public virtual DbSet<UserRole> UserRoles { get; set; }
 
@@ -67,7 +67,7 @@ public partial class PAWCP2DbContext : DbContext
             entity.Property(e => e.RoleName).HasMaxLength(50);
         });
 
-        modelBuilder.Entity<User>(entity =>
+        modelBuilder.Entity<Users>(entity =>
         {
             entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4CBA4BF0D9");
 

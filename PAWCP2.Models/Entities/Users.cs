@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace PAWCP2.Models;
 
-public partial class User
+public partial class Users
 {
     public int UserId { get; set; }
 
