@@ -1,7 +1,15 @@
+using PAWCP2.Mvc.Service;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+//nuevo
+builder.Services.AddHttpClient<IFoodItemService, FoodItemService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7289/"); //cambiar la ruta si no les sirve
+});
 
 var app = builder.Build();
 

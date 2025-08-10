@@ -19,11 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Manager\" />
-    <Folder Include="Repositories\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\PAWCP2.Models\PAWCP2.Models.csproj" />
   </ItemGroup>
 
