@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PAWCP2.Core.Manager;
 using PAWCP2.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+namespace PAWCP2.Mvc.Controllers;
+
+[Authorize]
 public class UsersController : Controller
 {
     private readonly IUserBusiness _userService;

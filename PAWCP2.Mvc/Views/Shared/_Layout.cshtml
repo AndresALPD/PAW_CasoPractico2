@@ -25,10 +25,10 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Users" asp-action="Index">Users</a>
                         </li>
-                        @if (Context.Session.GetString("UserId") != null)
+                        @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link" href="#">Hola, @Context.Session.GetString("Username")</a>
+                                <a class="nav-link" href="#">Hola, @User.Identity.Name</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Auth" asp-action="Logout">Cerrar Sesión</a>

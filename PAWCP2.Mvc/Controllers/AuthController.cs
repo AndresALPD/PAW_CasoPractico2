@@ -1,10 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PAWCP2.Api.Services;
 using PAWCP2.Models;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PAWCP2.Web.Controllers
 {
+    [AllowAnonymous]
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
@@ -18,6 +23,16 @@ namespace PAWCP2.Web.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+            Response.Headers["Pragma"] = "no-cache";
+            Response.Headers["Expires"] = "0";
+
+            if (User.Identity.IsAuthenticated)
+            {
+                HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
+                Response.Cookies.Delete("AuthCookie");
+            }
+
             return View();
         }
 
@@ -28,7 +43,7 @@ namespace PAWCP2.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(); // Retorna la vista con errores de validación
+                return View();
             }
 
             var user = await _authService.AuthenticateAsync(username, email);
@@ -39,19 +54,43 @@ namespace PAWCP2.Web.Controllers
                 return View();
             }
 
-            // Guardar sesión (ejemplo básico)
-            HttpContext.Session.SetString("UserId", user.UserId.ToString());
-            HttpContext.Session.SetString("Username", user.Username);
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Email, user.Email)
+            };
 
-            return RedirectToAction("Index", "Home"); // Redirige al dashboard
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                principal,
+                new AuthenticationProperties
+                {
+                    IsPersistent = true,
+                    ExpiresUtc = DateTime.UtcNow.AddMinutes(30) 
+                });
+
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: /Auth/Logout
         [HttpGet]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            HttpContext.Session.Clear(); // Elimina toda la sesión
-            return RedirectToAction("Login"); // Redirige al login
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            HttpContext.Session.Clear();
+            Response.Cookies.Delete("AuthCookie");
+            return RedirectToAction("Login", "Auth");
+        }
+
+        // GET: /Auth/AccessDenied
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 }

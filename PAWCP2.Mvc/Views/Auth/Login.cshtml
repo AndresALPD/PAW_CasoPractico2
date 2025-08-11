@@ -1,5 +1,19 @@
 ﻿@{
     ViewData["Title"] = "Iniciar Sesión";
+    Layout = "";
+}
+
+@{
+    Context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+    Context.Response.Headers["Pragma"] = "no-cache";
+    Context.Response.Headers["Expires"] = "0";
+}
+
+@if (ViewData["Message"] != null)
+{
+    <div class="alert alert-info">
+        @ViewData["Message"]
+    </div>
 }
 
 <div class="row justify-content-center">
@@ -25,3 +39,16 @@
         </form>
     </div>
 </div>
+
+<script>
+    // Forzar recarga completa al llegar a la página de login
+    if (performance.navigation.type === 2) {
+        // Navegación por back/forward
+        location.reload(true);
+    }
+
+    // Limpiar parámetros de la URL
+    if (window.location.search) {
+        history.replaceState(null, null, window.location.pathname);
+    }
+</script>
