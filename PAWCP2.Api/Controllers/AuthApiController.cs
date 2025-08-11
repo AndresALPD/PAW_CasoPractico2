@@ -16,7 +16,7 @@ namespace PAWCP2.Api.Controllers
             _authService = authService;
         }
 
-        // POST: api/AuthApi/login
+        // POST: api/AuthApi/login (Versión original sin token)
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -26,7 +26,7 @@ namespace PAWCP2.Api.Controllers
             }
 
             var user = await _authService.AuthenticateAsync(request.Username, request.Email);
-            
+
             if (user == null)
             {
                 return Unauthorized(new { Success = false, Message = "Credenciales incorrectas o usuario inactivo." });
@@ -34,11 +34,10 @@ namespace PAWCP2.Api.Controllers
 
             await _authService.UpdateLastLoginAsync(user.UserId);
 
-            // Respuesta exitosa (puedes incluir un token JWT en el futuro)
-            return Ok(new 
+            return Ok(new
             {
                 Success = true,
-                User = new 
+                User = new
                 {
                     user.UserId,
                     user.Username,
@@ -48,11 +47,33 @@ namespace PAWCP2.Api.Controllers
             });
         }
 
+        // POST: api/AuthApi/token (Nuevo endpoint para obtener JWT)
+        [HttpPost("token")]
+        public async Task<IActionResult> GetToken([FromBody] LoginRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { Success = false, Message = "Datos inválidos." });
+            }
+
+            var token = await _authService.LoginWithTokenAsync(request.Username, request.Email);
+
+            if (token == null)
+            {
+                return Unauthorized(new { Success = false, Message = "Credenciales incorrectas." });
+            }
+
+            return Ok(new
+            {
+                Success = true,
+                Token = token
+            });
+        }
+
         // POST: api/AuthApi/logout
         [HttpPost("logout")]
         public IActionResult Logout()
         {
-            // En una API REST pura, el logout suele manejarse en el cliente (eliminando el token).
             return Ok(new { Success = true, Message = "Sesión cerrada (client-side)." });
         }
     }

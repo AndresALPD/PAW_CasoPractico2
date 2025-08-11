@@ -1,6 +1,10 @@
-﻿using PAWCP2.Core.Manager;
+﻿using Microsoft.IdentityModel.Tokens;
+using PAWCP2.Core.Manager;
 using PAWCP2.Models;
 using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace PAWCP2.Api.Services
@@ -9,15 +13,43 @@ namespace PAWCP2.Api.Services
     {
         Task<Users> AuthenticateAsync(string username, string email);
         Task UpdateLastLoginAsync(int userId);
+        Task<string> LoginWithTokenAsync(string username, string email);
+
     }
 
     public class AuthService : IAuthService
     {
         private readonly IUserBusiness _userBusiness;
+        private readonly IConfiguration _configuration;
 
-        public AuthService(IUserBusiness userBusiness)
+        public AuthService(IUserBusiness userBusiness, IConfiguration configuration)
         {
             _userBusiness = userBusiness;
+            _configuration = configuration;
+        }
+
+        // Método para generar token (sin guardar en BD)
+        private string GenerateJwtToken(Users user)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Email, user.Email)
+        };
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddHours(1), // Token válido por 1 hora
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         public async Task<Users> AuthenticateAsync(string username, string email)
@@ -34,6 +66,12 @@ namespace PAWCP2.Api.Services
             }
 
             return user; // Retorna el usuario (o null si falla)
+        }
+
+        public async Task<string> LoginWithTokenAsync(string username, string email)
+        {
+            var user = await AuthenticateAsync(username, email);
+            return user != null ? GenerateJwtToken(user) : null;
         }
 
         public async Task UpdateLastLoginAsync(int userId)
