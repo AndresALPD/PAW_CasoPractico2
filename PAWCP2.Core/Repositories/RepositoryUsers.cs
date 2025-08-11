@@ -75,6 +75,5 @@ namespace PAWCP2.Repositories
             return await DbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
 
-
     }
 }

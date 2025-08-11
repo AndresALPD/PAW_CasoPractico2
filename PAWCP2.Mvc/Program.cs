@@ -1,5 +1,6 @@
 using PAWCP2.Repositories;
-using PAWCP2.Core.Manager; // Asegúrate que aquí estén IUserBusiness y UserBusiness
+using PAWCP2.Core.Manager;
+using PAWCP2.Api.Services; // Asegúrate que aquí estén IUserBusiness y UserBusiness
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,8 @@ builder.Services.AddScoped<IRepositoryUser, RepositoryUser>();
 
 // Registro del manager (servicio de negocio)
 builder.Services.AddScoped<IUserBusiness, BusinessUser>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddSession(); // Para manejar sesiones
 
 var app = builder.Build();
 
@@ -25,6 +28,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthorization();
 

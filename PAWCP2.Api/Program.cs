@@ -1,3 +1,4 @@
+using PAWCP2.Api.Services;
 using PAWCP2.Core.Manager;
 using PAWCP2.Repositories;
 
@@ -14,6 +15,7 @@ builder.Services.AddControllers()
 
 // También registra el repositorio que BusinessUser requiere
 builder.Services.AddScoped<IRepositoryUser, RepositoryUser>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
