@@ -1,0 +1,75 @@
+﻿@model IEnumerable<PAWCP2.Models.FoodItem>
+
+@{
+    ViewData["Title"] = "Food Items List";
+}
+
+<h2>Food Items List</h2>
+
+<button class="btn btn-outline-primary mb-3 float-end" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterDrawer" aria-controls="filterDrawer">
+    Advanced Search
+</button>
+
+<div class="clearfix"></div>
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="filterDrawer" aria-labelledby="filterDrawerLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="filterDrawerLabel">Advanced Search</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form method="get" asp-action="Index">
+            <div class="mb-3">
+                <label class="form-label">Filter by Role:</label>
+                <select class="form-select" name="filter">
+                    <option value=""> Default </option>
+                    <option value="R1">Admin</option>
+                    <option value="R2">Manager</option>
+                    <option value="R3">Viewer</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Apply Filter</button>
+        </form>
+    </div>
+</div>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Brand</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Supplier</th>
+            <th>Status</th>
+            <th>Role ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.FoodItemID</td>
+                    <td>@item.Name</td>
+                    <td>@item.Brand</td>
+                    <td>@item.Category</td>
+                    <td>@item.Price</td>
+                    <td>@item.QuantityInStock</td>
+                    <td>@item.Supplier</td>
+                    <td>@item.IsActive</td>
+                    <td>@item.RoleId</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5">No items found.</td>
+            </tr>
+        }
+    </tbody>
+</table>
