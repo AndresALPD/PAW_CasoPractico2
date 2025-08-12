@@ -14,6 +14,8 @@ namespace PAWCP2.Core.Manager
         Task<bool> SaveAsync(Users user);
         Task<bool> DeleteAsync(Users user);
         Task<Users> GetByIdWithRolesAsync(int id);
+        Task<Users> GetByUsernameAndEmailAsync(string username, string email);
+
     }
 
     public class BusinessUser : IUserBusiness
@@ -79,6 +81,22 @@ namespace PAWCP2.Core.Manager
         public async Task<bool> DeleteAsync(Users user)
         {
             return await _repository.DeleteAsync(user);
+        }
+        public async Task<Users> GetByUsernameAndEmailAsync(string username, string email)
+        {
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(email))
+                throw new ArgumentException("Username y email son requeridos.");
+
+            // Busca primero por username
+            var user = await _repository.FindByUsernameAsync(username);
+
+            // Verifica si el email coincide y si está activo
+            if (user != null && user.Email.Equals(email, StringComparison.OrdinalIgnoreCase) && user.IsActive)
+            {
+                return user;
+            }
+
+            return null; 
         }
     }
 }
