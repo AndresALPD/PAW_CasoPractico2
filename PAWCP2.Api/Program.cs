@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using PAWCP2.Core.Manager;
 using PAWCP2.Core.Repositories;
 using PAWCP2.Data;
+using PAWCP2.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
