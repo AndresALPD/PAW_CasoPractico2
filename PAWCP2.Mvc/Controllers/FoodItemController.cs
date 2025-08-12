@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PAWCP2.Models;
 using PAWCP2.Mvc.Service;
 
 namespace PAWCP2.Mvc.Controllers
 {
+    [Authorize]
     public class FoodItemController : Controller
     {
         private readonly IFoodItemService _foodItemService;
