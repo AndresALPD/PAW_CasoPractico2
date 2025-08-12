@@ -1,0 +1,98 @@
+﻿@{
+    ViewData["Title"] = "Iniciar Sesión";
+    Layout = "";
+}
+
+@{
+    Context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+    Context.Response.Headers["Pragma"] = "no-cache";
+    Context.Response.Headers["Expires"] = "0";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="login-container" id="loginContainer">
+        <div class="decoration">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+
+        <h2>@ViewData["Title"]</h2>
+
+        <!-- Mensaje de error mejorado -->
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="error-container">
+                <div class="error-message">
+                    <div class="error-icon">!</div>
+                    <div class="error-content">
+                        <div class="error-title">Error de autenticación</div>
+                        <div>
+                            <ul class="error-list">
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <form asp-action="Login" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label for="username">Usuario</label>
+                <div class="input-group">
+                    <span class="input-icon">👤</span>
+                    <input type="text" id="username" name="username" required autocomplete="username" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Correo Electrónico</label>
+                <div class="input-group">
+                    <span class="input-icon">✉️</span>
+                    <input type="email" id="email" name="email" required autocomplete="email" />
+                </div>
+            </div>
+
+            <button type="submit">Ingresar</button>
+        </form>
+
+        <div class="footer">
+            <p>¿Necesitas ayuda? <a href="#">Contáctanos</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Forzar recarga completa al llegar a la página de login
+        if (performance.navigation.type === 2) {
+            location.reload(true);
+        }
+
+        // Limpiar parámetros de la URL
+        if (window.location.search) {
+            history.replaceState(null, null, window.location.pathname);
+        }
+
+        // Animación al cargar
+        document.addEventListener('DOMContentLoaded', function () {
+            const container = document.getElementById('loginContainer');
+            setTimeout(() => {
+                container.classList.add('loaded');
+            }, 100);
+        });
+    </script>
+</body>
+</html>
