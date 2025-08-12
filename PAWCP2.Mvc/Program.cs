@@ -1,9 +1,11 @@
+
 using PAWCP2.Repositories;
-using PAWCP2.Core.Manager; // Asegúrate que aquí estén IUserBusiness y UserBusiness
+using PAWCP2.Core.Manager;
+using PAWCP2.Mvc.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Registrar servicios para inyección
+// Registrar servicios para inyecciï¿½n
 builder.Services.AddControllersWithViews();
 
 // Registro de repositorio
@@ -11,6 +13,11 @@ builder.Services.AddScoped<IRepositoryUser, RepositoryUser>();
 
 // Registro del manager (servicio de negocio)
 builder.Services.AddScoped<IUserBusiness, BusinessUser>();
+//nuevo
+builder.Services.AddHttpClient<IFoodItemService, FoodItemService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7289/"); //cambiar la ruta si no les sirve
+});
 
 var app = builder.Build();
 
