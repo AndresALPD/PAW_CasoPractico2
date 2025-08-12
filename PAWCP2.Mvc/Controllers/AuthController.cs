@@ -31,6 +31,7 @@ namespace PAWCP2.Web.Controllers
             {
                 HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
                 Response.Cookies.Delete("AuthCookie");
+                return RedirectToAction("Login", "Auth");
             }
 
             return View();
@@ -80,9 +81,16 @@ namespace PAWCP2.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Logout()
         {
+            // 1. Cerrar sesión de autenticación
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            // 2. Limpiar sesión
             HttpContext.Session.Clear();
+
+            // 3. Eliminar manualmente la cookie
             Response.Cookies.Delete("AuthCookie");
+
+            // 4. Redirigir al login con parámetros para evitar caché
             return RedirectToAction("Login", "Auth");
         }
 
