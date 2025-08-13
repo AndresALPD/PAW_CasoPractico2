@@ -5,6 +5,7 @@ using PAWCP2.Core.Manager;
 using PAWCP2.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PAWCP2.Core.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,11 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IRepositoryUser, RepositoryUser>();
 builder.Services.AddScoped<IUserBusiness, BusinessUser>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+builder.Services.AddScoped<IUserRoleManager, UserRoleManager>();
+
 
 // Nuevo servicio HTTP para FoodItem
 builder.Services.AddHttpClient<IFoodItemService, FoodItemService>(client =>

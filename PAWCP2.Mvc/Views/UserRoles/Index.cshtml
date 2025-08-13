@@ -1,0 +1,49 @@
+﻿@model IEnumerable<PAWCP2.Mvc.Models.ViewModels.UserRoleItemVm>
+
+@{
+    ViewData["Title"] = "User Roles";
+}
+
+<h2 class="mb-3">User Roles</h2>
+
+@if (TempData["Ok"] != null)
+{
+    <div class="alert alert-success">@TempData["Ok"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Usuario</th>
+            <th>Rol</th>
+            <th style="width:150px"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var row in Model)
+        {
+            <tr>
+                <td>@row.Username</td>
+                <td>
+                    <form asp-action="Assign" asp-controller="UserRoles" method="post" class="d-flex gap-2">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="userId" value="@row.UserId" />
+                        <select class="form-select" name="roleId" required>
+                            <option value="">-- Seleccione --</option>
+                            @foreach (var r in row.Roles)
+                            {
+                                <option value="@r.Value" @(row.RoleId?.ToString() == r.Value ? "selected" : "")>@r.Text</option>
+                            }
+                        </select>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </form>
+                </td>
+                <td></td>
+            </tr>
+        }
+    </tbody>
+</table>
