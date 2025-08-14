@@ -12,6 +12,8 @@ namespace PAWCP2.Core.Manager
     {
         Task<IEnumerable<FoodItem>> GetAllAsync();
         Task<IEnumerable<FoodItem>> GetByRoleAsync(int roleId);
+        Task<FoodItem?> GetByIdAsync(int id);
+        Task<bool> UpdateAsync(FoodItem item);
     }
 
     public class BusinessFoodItem : IBusinessFoodItem
@@ -40,6 +42,16 @@ namespace PAWCP2.Core.Manager
                 _ => Enumerable.Empty<FoodItem>()
             };
         }
+        public async Task<FoodItem?> GetByIdAsync(int id)
+        {
+            return await _repository.GetByIdAsync(id);
+        }
+
+        public async Task<bool> UpdateAsync(FoodItem item)
+        {
+            return await _repository.UpdateAsync(item);
+        }
+
     }
 
 }

@@ -13,6 +13,8 @@ namespace PAWCP2.Core.Repositories
     {
         Task<IEnumerable<FoodItem>> GetAllAsync();
         Task<IEnumerable<FoodItem>> GetByRoleIdAsync(int roleId);
+        Task<FoodItem?> GetByIdAsync(int id);
+        Task<bool> UpdateAsync(FoodItem item);
     }
 
     public class FoodItemRepository : IFoodItemRepository
@@ -36,6 +38,17 @@ namespace PAWCP2.Core.Repositories
                 .Where(f => f.RoleId == roleId)
                 .ToListAsync();
         }
+        public async Task<FoodItem?> GetByIdAsync(int id)
+        {
+            return await _context.FoodItems.FirstOrDefaultAsync(f => f.FoodItemID == id);
+        }
+
+        public async Task<bool> UpdateAsync(FoodItem item)
+        {
+            _context.FoodItems.Update(item);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
     }
 
 }

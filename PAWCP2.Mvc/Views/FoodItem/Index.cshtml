@@ -1,50 +1,19 @@
 ﻿@model IEnumerable<PAWCP2.Models.FoodItem>
 
-@{
-    ViewData["Title"] = "Food Items List";
-}
 
-<h2>Food Items List</h2>
-
-<button class="btn btn-outline-primary mb-3 float-end" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterDrawer" aria-controls="filterDrawer">
-    Advanced Search
-</button>
-
-<div class="clearfix"></div>
-
-<div class="offcanvas offcanvas-end" tabindex="-1" id="filterDrawer" aria-labelledby="filterDrawerLabel">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="filterDrawerLabel">Advanced Search</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-        <form method="get" asp-action="Index">
-            <div class="mb-3">
-                <label class="form-label">Filter by Role:</label>
-                <select class="form-select" name="filter">
-                    <option value=""> Default </option>
-                    <option value="R1">Admin</option>
-                    <option value="R2">Manager</option>
-                    <option value="R3">Viewer</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Apply Filter</button>
-        </form>
-    </div>
-</div>
-
-<table class="table table-bordered table-striped">
+<table class="table table-striped">
     <thead>
         <tr>
-            <th>ID</th>
+            <th>FoodItemID</th>
             <th>Name</th>
             <th>Brand</th>
             <th>Category</th>
             <th>Price</th>
-            <th>Stock</th>
+            <th>Quantity In Stock</th>
             <th>Supplier</th>
-            <th>Status</th>
-            <th>Role ID</th>
+            <th>Is Active</th>
+            <th>RoleId</th>
+            <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
@@ -62,14 +31,131 @@
                     <td>@item.Supplier</td>
                     <td>@item.IsActive</td>
                     <td>@item.RoleId</td>
+                    <td>
+                        <!-- Botón para Editar Stock -->
+                        <button class="btn btn-sm btn-warning d-flex align-items-center gap-1"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editModal"
+                                data-id="@item.FoodItemID"
+                                data-quantity="@item.QuantityInStock">
+                            <i class="bi bi-pencil-fill"></i> <!-- Icono de lápiz -->
+                            Editar Stock
+                        </button>
+                    </td>
+                    <td>
+                        <!-- Botón para Activar/Desactivar -->
+                        <form asp-action="ChangeActiveStatus" method="post" class="d-inline">
+                            <input type="hidden" name="FoodItemID" value="@item.FoodItemID" />
+                            <button type="submit" class="btn btn-sm @(item.IsActive ? "btn-danger" : "btn-success") d-flex align-items-center gap-1">
+                                <i class="bi @(item.IsActive ? "bi-x-circle-fill" : "bi-check-circle-fill")"></i>
+                                @(item.IsActive ? "Desactivar" : "Activar")
+                            </button>
+                        </form>
+                    </td>
+
+
+                    
                 </tr>
             }
         }
         else
         {
             <tr>
-                <td colspan="5">No items found.</td>
+                <td colspan="10">No items found.</td>
             </tr>
         }
     </tbody>
 </table>
+
+<!-- Modal Bootstrap -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Editar Quantity In Stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editForm" method="post" asp-action="UpdateStock">
+                <div class="modal-body">
+                    <input type="hidden" id="FoodItemID" name="FoodItemID" />
+                    <div class="mb-3">
+                        <label for="QuantityInStock" class="form-label">Cantidad en Stock</label>
+                        <input type="number" class="form-control" id="QuantityInStock" name="QuantityInStock" min="0" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var editModal = document.getElementById('editModal');
+        editModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var id = button.getAttribute('data-id');
+            var quantity = button.getAttribute('data-quantity');
+
+            document.getElementById('FoodItemID').value = id;
+            document.getElementById('QuantityInStock').value = quantity;
+        });
+    </script>
+  
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.querySelectorAll('.status-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); 
+                const button = this.querySelector('button');
+                const action = button.textContent.trim();
+                
+                Swal.fire({
+                    title: `¿Seguro que deseas ${action}?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí',
+                    cancelButtonText: 'No'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit();
+                    }
+                });
+            });
+        });
+
+        // Mostrar mensajes de TempData
+        @if (TempData["Success"] != null)
+        {
+            <text>
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: '@TempData["Success"]',
+                confirmButtonText: 'Aceptar'
+            });
+            </text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <text>
+            Swal.fire({
+                icon: 'error',
+                title: '¡Error!',
+                text: '@TempData["Error"]',
+                confirmButtonText: 'Aceptar'
+            });
+            </text>
+        }
+    </script>
+}
+
+}
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+}
