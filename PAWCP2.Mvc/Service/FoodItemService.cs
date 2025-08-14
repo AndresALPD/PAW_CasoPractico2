@@ -6,6 +6,7 @@ namespace PAWCP2.Mvc.Service
     public interface IFoodItemService
     {
         Task<IEnumerable<FoodItem>> GetFoodItemsByRoleAsync(int? roleId);
+        Task<IEnumerable<FoodItem>> AdvancedSearchAsync(FoodItemSearchCriteria criteria);
     }
 
     public class FoodItemService : IFoodItemService
@@ -36,6 +37,20 @@ namespace PAWCP2.Mvc.Service
             var foodItems = JsonSerializer.Deserialize<IEnumerable<FoodItem>>(content, options);
 
             return foodItems ?? Enumerable.Empty<FoodItem>();
+        }
+
+        public async Task<IEnumerable<FoodItem>> AdvancedSearchAsync(FoodItemSearchCriteria criteria)
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/fooditem/advancedsearch", criteria);
+
+            if (!response.IsSuccessStatusCode)
+                return Enumerable.Empty<FoodItem>();
+
+            var content = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+            return JsonSerializer.Deserialize<IEnumerable<FoodItem>>(content, options)
+                   ?? Enumerable.Empty<FoodItem>();
         }
     }
 

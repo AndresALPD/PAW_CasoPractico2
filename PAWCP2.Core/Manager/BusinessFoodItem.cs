@@ -12,6 +12,10 @@ namespace PAWCP2.Core.Manager
     {
         Task<IEnumerable<FoodItem>> GetAllAsync();
         Task<IEnumerable<FoodItem>> GetByRoleAsync(int roleId);
+        Task<IEnumerable<FoodItem>> AdvancedSearchAsync(FoodItemSearchCriteria criteria);
+        Task<IEnumerable<string>> GetCategoriesAsync();
+        Task<IEnumerable<string>> GetBrandsAsync();
+        Task<IEnumerable<string>> GetSuppliersAsync();
     }
 
     public class BusinessFoodItem : IBusinessFoodItem
@@ -40,6 +44,47 @@ namespace PAWCP2.Core.Manager
                 _ => Enumerable.Empty<FoodItem>()
             };
         }
+
+        public async Task<IEnumerable<FoodItem>> AdvancedSearchAsync(FoodItemSearchCriteria criteria)
+        {
+            var query = (await _repository.GetAllAsync()).AsQueryable();
+
+            if (criteria.RoleId.HasValue)
+                query = (await _repository.GetByRoleIdAsync(criteria.RoleId.Value)).AsQueryable();
+
+            if (!string.IsNullOrEmpty(criteria.Category))
+                query = query.Where(f => f.Category == criteria.Category);
+
+            if (!string.IsNullOrEmpty(criteria.Brand))
+                query = query.Where(f => f.Brand == criteria.Brand);
+
+            if (criteria.MinPrice.HasValue)
+                query = query.Where(f => f.Price >= criteria.MinPrice);
+
+            if (criteria.MaxPrice.HasValue)
+                query = query.Where(f => f.Price <= criteria.MaxPrice);
+
+            if (criteria.ExpirationDateBefore.HasValue)
+                query = query.Where(f => f.ExpirationDate <= criteria.ExpirationDateBefore);
+
+            if (criteria.IsPerishable.HasValue)
+                query = query.Where(f => f.IsPerishable == criteria.IsPerishable);
+
+            if (criteria.MaxCalories.HasValue)
+                query = query.Where(f => f.CaloriesPerServing <= criteria.MaxCalories);
+
+            if (!string.IsNullOrEmpty(criteria.Supplier))
+                query = query.Where(f => f.Supplier == criteria.Supplier);
+
+            if (criteria.IsActive.HasValue)
+                query = query.Where(f => f.IsActive == criteria.IsActive);
+
+            return query.ToList();
+        }
+
+        public async Task<IEnumerable<string>> GetCategoriesAsync() => await _repository.GetDistinctCategoriesAsync();
+        public async Task<IEnumerable<string>> GetBrandsAsync() => await _repository.GetDistinctBrandsAsync();
+        public async Task<IEnumerable<string>> GetSuppliersAsync() => await _repository.GetDistinctSuppliersAsync();
     }
 
 }

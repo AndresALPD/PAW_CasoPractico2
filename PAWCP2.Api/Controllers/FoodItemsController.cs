@@ -30,6 +30,31 @@ namespace PAWCP2.Api.Controllers
             var foodItems = await _business.GetByRoleAsync(roleId);
             return Ok(foodItems);
         }
+
+        [HttpPost("advancedsearch")]
+        public async Task<ActionResult<IEnumerable<FoodItem>>> AdvancedSearch([FromBody] FoodItemSearchCriteria criteria)
+        {
+            var foodItems = await _business.AdvancedSearchAsync(criteria);
+            return Ok(foodItems);
+        }
+
+        [HttpGet("categories")]
+        public async Task<ActionResult<IEnumerable<string>>> GetCategories()
+        {
+            return Ok(await _business.GetCategoriesAsync());
+        }
+
+        [HttpGet("brands")]
+        public async Task<ActionResult<IEnumerable<string>>> GetBrands()
+        {
+            return Ok(await _business.GetBrandsAsync());
+        }
+
+        [HttpGet("suppliers")]
+        public async Task<ActionResult<IEnumerable<string>>> GetSuppliers()
+        {
+            return Ok(await _business.GetSuppliersAsync());
+        }
     }
 
 }
