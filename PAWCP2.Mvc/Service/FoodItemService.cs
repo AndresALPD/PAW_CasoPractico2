@@ -1,11 +1,14 @@
-﻿using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 using PAWCP2.Models;
+using System.Text.Json;
 
 namespace PAWCP2.Mvc.Service
 {
     public interface IFoodItemService
     {
         Task<IEnumerable<FoodItem>> GetFoodItemsByRoleAsync(int? roleId);
+        Task<bool> UpdateQuantityInStockAsync(FoodItem item);
+        Task<bool> UpdateActiveStatusAsync(FoodItem item);
         Task<IEnumerable<FoodItem>> AdvancedSearchAsync(FoodItemSearchCriteria criteria);
     }
 
@@ -16,7 +19,7 @@ namespace PAWCP2.Mvc.Service
         public FoodItemService(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri("https://localhost:7289/"); //cambiar la ruta si no les sirve
+            _httpClient.BaseAddress = new Uri("https://localhost:7289/");
         }
 
         public async Task<IEnumerable<FoodItem>> GetFoodItemsByRoleAsync(int? roleId)
@@ -39,6 +42,18 @@ namespace PAWCP2.Mvc.Service
             return foodItems ?? Enumerable.Empty<FoodItem>();
         }
 
+        public async Task<bool> UpdateQuantityInStockAsync(FoodItem item)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"api/fooditem/{item.FoodItemID}/stock", item);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> UpdateActiveStatusAsync(FoodItem item)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"api/fooditem/{item.FoodItemID}/active", item);
+            return response.IsSuccessStatusCode;
+        }
+
         public async Task<IEnumerable<FoodItem>> AdvancedSearchAsync(FoodItemSearchCriteria criteria)
         {
             var response = await _httpClient.PostAsJsonAsync("api/fooditem/advancedsearch", criteria);
@@ -53,5 +68,4 @@ namespace PAWCP2.Mvc.Service
                    ?? Enumerable.Empty<FoodItem>();
         }
     }
-
 }

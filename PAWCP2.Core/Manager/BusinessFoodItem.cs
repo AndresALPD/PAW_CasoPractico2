@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using PAWCP2.Core.Repositories;
 using PAWCP2.Models;
@@ -12,6 +11,8 @@ namespace PAWCP2.Core.Manager
     {
         Task<IEnumerable<FoodItem>> GetAllAsync();
         Task<IEnumerable<FoodItem>> GetByRoleAsync(int roleId);
+        Task<FoodItem?> GetByIdAsync(int id);
+        Task<bool> UpdateAsync(FoodItem item);
         Task<IEnumerable<FoodItem>> AdvancedSearchAsync(FoodItemSearchCriteria criteria);
         Task<IEnumerable<string>> GetCategoriesAsync();
         Task<IEnumerable<string>> GetBrandsAsync();
@@ -43,6 +44,16 @@ namespace PAWCP2.Core.Manager
                 3 => all.Where(f => f.IsActive == true),
                 _ => Enumerable.Empty<FoodItem>()
             };
+        }
+
+        public async Task<FoodItem?> GetByIdAsync(int id)
+        {
+            return await _repository.GetByIdAsync(id);
+        }
+
+        public async Task<bool> UpdateAsync(FoodItem item)
+        {
+            return await _repository.UpdateAsync(item);
         }
 
         public async Task<IEnumerable<FoodItem>> AdvancedSearchAsync(FoodItemSearchCriteria criteria)
@@ -86,5 +97,4 @@ namespace PAWCP2.Core.Manager
         public async Task<IEnumerable<string>> GetBrandsAsync() => await _repository.GetDistinctBrandsAsync();
         public async Task<IEnumerable<string>> GetSuppliersAsync() => await _repository.GetDistinctSuppliersAsync();
     }
-
 }

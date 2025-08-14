@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PAWCP2.Data;
@@ -13,6 +12,8 @@ namespace PAWCP2.Core.Repositories
     {
         Task<IEnumerable<FoodItem>> GetAllAsync();
         Task<IEnumerable<FoodItem>> GetByRoleIdAsync(int roleId);
+        Task<FoodItem?> GetByIdAsync(int id);
+        Task<bool> UpdateAsync(FoodItem item);
         Task<IEnumerable<string>> GetDistinctCategoriesAsync();
         Task<IEnumerable<string>> GetDistinctBrandsAsync();
         Task<IEnumerable<string>> GetDistinctSuppliersAsync();
@@ -38,6 +39,17 @@ namespace PAWCP2.Core.Repositories
             return await _context.FoodItems
                 .Where(f => f.RoleId == roleId)
                 .ToListAsync();
+        }
+
+        public async Task<FoodItem?> GetByIdAsync(int id)
+        {
+            return await _context.FoodItems.FirstOrDefaultAsync(f => f.FoodItemID == id);
+        }
+
+        public async Task<bool> UpdateAsync(FoodItem item)
+        {
+            _context.FoodItems.Update(item);
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<IEnumerable<string>> GetDistinctCategoriesAsync()
@@ -67,5 +79,4 @@ namespace PAWCP2.Core.Repositories
                 .ToListAsync();
         }
     }
-
 }

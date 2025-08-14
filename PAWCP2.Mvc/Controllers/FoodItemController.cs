@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PAWCP2.Core.Manager;
 using PAWCP2.Models;
-using PAWCP2.Mvc.Models;
 using PAWCP2.Mvc.Service;
 
 namespace PAWCP2.Mvc.Controllers
@@ -85,6 +84,59 @@ namespace PAWCP2.Mvc.Controllers
                    string.IsNullOrEmpty(criteria.Supplier) &&
                    !criteria.IsActive.HasValue;
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateStock(int FoodItemID, int QuantityInStock)
+        {
+            var foodItems = await _foodItemService.GetFoodItemsByRoleAsync(null);
+            var item = foodItems.FirstOrDefault(f => f.FoodItemID == FoodItemID);
+
+            if (item == null)
+            {
+                TempData["Error"] = "El alimento no existe.";
+                return RedirectToAction("Index");
+            }
+
+            item.QuantityInStock = QuantityInStock;
+            var result = await _foodItemService.UpdateQuantityInStockAsync(item);
+
+            if (result)
+                TempData["Success"] = "Stock actualizado correctamente";
+            else
+                TempData["Error"] = "Error al actualizar el stock";
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeActiveStatus(int FoodItemID)
+        {
+            var foodItems = await _foodItemService.GetFoodItemsByRoleAsync(null);
+            var item = foodItems.FirstOrDefault(f => f.FoodItemID == FoodItemID);
+
+            if (item == null)
+            {
+                TempData["Error"] = "El alimento no existe.";
+                return RedirectToAction("Index");
+            }
+
+            if (item.IsActive && item.QuantityInStock > 0)
+            {
+                TempData["Error"] = "No se puede desactivar un alimento que tiene stock disponible.";
+                return RedirectToAction("Index");
+            }
+
+            item.IsActive = !item.IsActive;
+            var result = await _foodItemService.UpdateActiveStatusAsync(item);
+
+            if (result)
+                TempData["Success"] = item.IsActive ? "Alimento activado" : "Alimento desactivado";
+            else
+                TempData["Error"] = "Error al actualizar el estado";
+
+            return RedirectToAction("Index");
+        }
     }
 }
-
