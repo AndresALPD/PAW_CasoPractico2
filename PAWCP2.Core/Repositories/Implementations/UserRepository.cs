@@ -12,7 +12,7 @@ namespace PAWCP2.Core.Repositories.Implementations
 {
     public class UserRepository : RepositoryBase<Users>, IUserRepository
     {
-        public UserRepository(PAWCP2DbContext ctx) : base(ctx) { }
+        public UserRepository(PAWCP2DbContext context) : base(context) { }
 
         public async Task<List<Users>> GetAllAsync() =>
             await DbContext.Users.AsNoTracking().OrderBy(u => u.Username).ToListAsync();

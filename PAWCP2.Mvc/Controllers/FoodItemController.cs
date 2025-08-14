@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PAWCP2.Models;
+using PAWCP2.Mvc.Models;
 using PAWCP2.Mvc.Service;
 
 namespace PAWCP2.Mvc.Controllers

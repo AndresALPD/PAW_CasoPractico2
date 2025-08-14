@@ -1,13 +1,22 @@
-using PAWCP2.Mvc.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using PAWCP2.Repositories;
-using PAWCP2.Core.Manager;
-using PAWCP2.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PAWCP2.Api.Services;
+using PAWCP2.Core.Manager;
+using PAWCP2.Core.Repositories.Implementations;
 using PAWCP2.Core.Repositories.Interfaces;
+using PAWCP2.Data;
+using PAWCP2.Mvc.Service;
+using PAWCP2.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(cs))
+    throw new InvalidOperationException("La cadena de conexión 'DefaultConnection' no está configurada en appsettings.json.");
+builder.Services.AddDbContext<PAWCP2DbContext>(options =>
+    options.UseSqlServer(cs));
 
 // Registrar servicios
 builder.Services.AddControllersWithViews();

@@ -14,7 +14,7 @@ namespace PAWCP2.Core.Manager
     {
         Task<OperationResult<List<Users>>> GetUsersAsync();
         Task<OperationResult<List<SelectListItem>>> GetRolesAsSelectAsync();
-        Task<OperationResult<int?>> GetCurrentRoleIdAsync(int userId);
+        Task<OperationResult<int>> GetCurrentRoleIdAsync(int userId);
         Task<OperationResult<bool>> AssignRoleAsync(int userId, int roleId);
     }
 
@@ -24,7 +24,10 @@ namespace PAWCP2.Core.Manager
         private readonly IRoleRepository _roles;
         private readonly IUserRoleRepository _userRoles;
 
-        public UserRoleManager(IUserRepository users, IRoleRepository roles, IUserRoleRepository userRoles)
+        public UserRoleManager(
+            IUserRepository users,
+            IRoleRepository roles,
+            IUserRoleRepository userRoles)
         {
             _users = users;
             _roles = roles;
@@ -35,12 +38,12 @@ namespace PAWCP2.Core.Manager
         {
             try
             {
-                var data = await _users.GetAllAsync();
-                return OperationResult<List<Users>>.Ok(data);
+                var list = await _users.GetAllAsync();
+                return OperationResult<List<Users>>.Ok(list);
             }
             catch (Exception ex)
             {
-                return OperationResult<List<Users>>.Fail($"Error al obtener usuarios: {ex.Message}");
+                return OperationResult<List<Users>>.Fail($"Error obteniendo usuarios: {ex.Message}");
             }
         }
 
@@ -49,30 +52,27 @@ namespace PAWCP2.Core.Manager
             try
             {
                 var roles = await _roles.GetAllAsync();
-                var items = roles.Select(r => new SelectListItem
-                {
-                    Value = r.RoleId.ToString(),
-                    Text = r.RoleName
-                }).ToList();
-
+                var items = roles
+                    .Select(r => new SelectListItem { Value = r.RoleId.ToString(), Text = r.RoleName })
+                    .ToList();
                 return OperationResult<List<SelectListItem>>.Ok(items);
             }
             catch (Exception ex)
             {
-                return OperationResult<List<SelectListItem>>.Fail($"Error al obtener roles: {ex.Message}");
+                return OperationResult<List<SelectListItem>>.Fail($"Error obteniendo roles: {ex.Message}");
             }
         }
 
-        public async Task<OperationResult<int?>> GetCurrentRoleIdAsync(int userId)
+        public async Task<OperationResult<int>> GetCurrentRoleIdAsync(int userId)
         {
             try
             {
-                var cur = await _userRoles.GetCurrentAsync(userId);
-                return OperationResult<int?>.Ok(cur?.RoleId);
+                var current = await _userRoles.GetCurrentAsync(userId);
+                return OperationResult<int>.Ok(current?.RoleId ?? 0);
             }
             catch (Exception ex)
             {
-                return OperationResult<int?>.Fail($"Error al obtener rol actual: {ex.Message}");
+                return OperationResult<int>.Fail($"Error obteniendo rol actual: {ex.Message}");
             }
         }
 
@@ -80,11 +80,11 @@ namespace PAWCP2.Core.Manager
         {
             try
             {
-                if (!await _users.ExistsAsync(userId))
-                    return OperationResult<bool>.Fail("Usuario no existe.");
+                var userExists = await _users.ExistsAsync(userId);
+                if (!userExists) return OperationResult<bool>.Fail("Usuario no existe.");
 
-                if (!await _roles.ExistsAsync(roleId))
-                    return OperationResult<bool>.Fail("Rol no existe.");
+                var roleExists = await _roles.ExistsAsync(roleId);
+                if (!roleExists) return OperationResult<bool>.Fail("Rol no existe.");
 
                 var ok = await _userRoles.ReplaceAsync(userId, roleId);
                 return ok

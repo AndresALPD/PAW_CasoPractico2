@@ -13,7 +13,7 @@ namespace PAWCP2.Core.Repositories.Implementations
 {
     public class RoleRepository : RepositoryBase<Role>, IRoleRepository
     {
-        public RoleRepository(PAWCP2DbContext ctx) : base(ctx) { }
+        public RoleRepository(PAWCP2DbContext context) : base(context) { }
 
         public async Task<List<Role>> GetAllAsync() =>
             await DbContext.Roles.AsNoTracking().OrderBy(r => r.RoleName).ToListAsync();

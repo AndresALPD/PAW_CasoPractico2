@@ -12,7 +12,7 @@ namespace PAWCP2.Core.Repositories.Implementations
 {
     public class UserRoleRepository : RepositoryBase<UserRole>, IUserRoleRepository
     {
-        public UserRoleRepository(PAWCP2DbContext ctx) : base(ctx) { }
+        public UserRoleRepository(PAWCP2DbContext context) : base(context) { }
 
         public async Task<UserRole?> GetCurrentAsync(int userId) =>
             await DbContext.UserRoles.AsNoTracking().FirstOrDefaultAsync(x => x.UserId == userId);

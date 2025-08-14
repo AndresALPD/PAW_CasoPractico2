@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PAWCP2.Manager;
+using PAWCP2.Core.Manager;
 using PAWCP2.Mvc.Models.Role;
 
 namespace PAWCP2.Mvc.Controllers

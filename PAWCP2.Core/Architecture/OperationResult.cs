@@ -6,13 +6,16 @@ using System.Threading.Tasks;
 
 namespace PAWCP2.Core.Architecture
 {
-    internal class OperationResult<T>
+    public class OperationResult<T>
     {
-        public bool Success { get; init; }
-        public string? Error { get; init; }
-        public T? Data { get; init; }
+        public bool Success { get; private set; }
+        public string? Error { get; private set; }
+        public T? Data { get; private set; }
 
-        public static OperationResult<T> Ok(T data) => new() { Success = true, Data = data };
-        public static OperationResult<T> Fail(string error) => new() { Success = false, Error = error };
+        public static OperationResult<T> Ok(T data) =>
+            new OperationResult<T> { Success = true, Data = data };
+
+        public static OperationResult<T> Fail(string error) =>
+            new OperationResult<T> { Success = false, Error = error };
     }
 }

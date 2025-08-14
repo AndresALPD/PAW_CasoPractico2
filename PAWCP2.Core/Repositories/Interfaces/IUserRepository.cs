@@ -12,3 +12,4 @@ namespace PAWCP2.Core.Repositories.Interfaces
         Task<List<Users>> GetAllAsync();
         Task<bool> ExistsAsync(int userId);
     }
+}
