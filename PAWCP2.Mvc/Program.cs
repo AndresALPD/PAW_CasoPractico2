@@ -12,11 +12,9 @@ using PAWCP2.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var cs = builder.Configuration.GetConnectionString("DefaultConnection");
-if (string.IsNullOrWhiteSpace(cs))
-    throw new InvalidOperationException("La cadena de conexión 'DefaultConnection' no está configurada en appsettings.json.");
-builder.Services.AddDbContext<PAWCP2DbContext>(options =>
-    options.UseSqlServer(cs));
+builder.Services.AddDbContext<PAWCP2DbContext>(opt =>
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 // Registrar servicios
 builder.Services.AddControllersWithViews();
