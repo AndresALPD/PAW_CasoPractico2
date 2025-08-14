@@ -72,6 +72,30 @@ namespace PAWCP2.Mvc.Controllers
             return View(viewModel);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleActive(int id)
+        {
+            var success = await _businessFoodItem.ToggleActiveStatusAsync(id);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "No se puede desactivar un ítem con cantidad mayor a 0";
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateQuantity(int id, int quantity)
+        {
+            var success = await _businessFoodItem.UpdateQuantityAsync(id, quantity);
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Error al actualizar la cantidad";
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
         private bool IsEmptySearch(FoodItemSearchCriteria criteria)
         {
             return string.IsNullOrEmpty(criteria.Category) &&

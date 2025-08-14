@@ -7,6 +7,9 @@ namespace PAWCP2.Mvc.Service
     {
         Task<IEnumerable<FoodItem>> GetFoodItemsByRoleAsync(int? roleId);
         Task<IEnumerable<FoodItem>> AdvancedSearchAsync(FoodItemSearchCriteria criteria);
+
+        Task<bool> ToggleActiveStatusAsync(int foodItemId);
+        Task<bool> UpdateQuantityAsync(int foodItemId, int quantity);
     }
 
     public class FoodItemService : IFoodItemService
@@ -51,6 +54,18 @@ namespace PAWCP2.Mvc.Service
 
             return JsonSerializer.Deserialize<IEnumerable<FoodItem>>(content, options)
                    ?? Enumerable.Empty<FoodItem>();
+        }
+
+        public async Task<bool> ToggleActiveStatusAsync(int foodItemId)
+        {
+            var response = await _httpClient.PostAsync($"api/fooditem/toggleactive/{foodItemId}", null);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> UpdateQuantityAsync(int foodItemId, int quantity)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"api/fooditem/updatequantity/{foodItemId}", quantity);
+            return response.IsSuccessStatusCode;
         }
     }
 

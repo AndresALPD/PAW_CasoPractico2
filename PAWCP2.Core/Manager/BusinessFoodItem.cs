@@ -16,6 +16,8 @@ namespace PAWCP2.Core.Manager
         Task<IEnumerable<string>> GetCategoriesAsync();
         Task<IEnumerable<string>> GetBrandsAsync();
         Task<IEnumerable<string>> GetSuppliersAsync();
+        Task<bool> ToggleActiveStatusAsync(int foodItemId);
+        Task<bool> UpdateQuantityAsync(int foodItemId, int quantity);
     }
 
     public class BusinessFoodItem : IBusinessFoodItem
@@ -80,6 +82,16 @@ namespace PAWCP2.Core.Manager
                 query = query.Where(f => f.IsActive == criteria.IsActive);
 
             return query.ToList();
+        }
+
+        public async Task<bool> ToggleActiveStatusAsync(int foodItemId)
+        {
+            return await _repository.ToggleActiveStatusAsync(foodItemId);
+        }
+
+        public async Task<bool> UpdateQuantityAsync(int foodItemId, int quantity)
+        {
+            return await _repository.UpdateQuantityAsync(foodItemId, quantity);
         }
 
         public async Task<IEnumerable<string>> GetCategoriesAsync() => await _repository.GetDistinctCategoriesAsync();

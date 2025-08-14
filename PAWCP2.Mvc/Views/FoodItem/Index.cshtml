@@ -5,6 +5,13 @@
     ViewData["Title"] = "Food Items List";
 }
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 <h2>Food Items List</h2>
 
 <button class="btn btn-outline-primary mb-3 float-end" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterDrawer" aria-controls="filterDrawer">
@@ -127,6 +134,32 @@
                     <td>@item.Supplier</td>
                     <td>@item.IsActive</td>
                     <td>@item.RoleId</td>
+                    <td>
+                        <form asp-action="UpdateQuantity" method="post">
+                            <input type="hidden" name="id" value="@item.FoodItemID" />
+                            <input type="number" name="quantity" value="@item.QuantityInStock"
+                                   min="0" class="form-control-sm" style="width: 60px;" />
+                            <button type="submit" class="btn btn-sm btn-primary">✓</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form asp-action="ToggleActive" method="post">
+                            <input type="hidden" name="id" value="@item.FoodItemID" />
+                            @if (item.IsActive.GetValueOrDefault())
+                            {
+                                <button type="submit" class="btn btn-sm btn-danger"
+                                @(item.QuantityInStock > 0 ? "disabled" : "")>
+                                    Desactivar
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-sm btn-success">
+                                    Activar
+                                </button>
+                            }
+                        </form>
+                    </td>
                 </tr>
             }
         }

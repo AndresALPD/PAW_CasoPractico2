@@ -55,6 +55,22 @@ namespace PAWCP2.Api.Controllers
         {
             return Ok(await _business.GetSuppliersAsync());
         }
+
+        [HttpPost("toggleactive/{id}")]
+        public async Task<IActionResult> ToggleActive(int id)
+        {
+            var result = await _business.ToggleActiveStatusAsync(id);
+            return result ? Ok() : BadRequest("No se puede desactivar un ítem con cantidad mayor a 0");
+        }
+
+        [HttpPost("updatequantity/{id}")]
+        public async Task<IActionResult> UpdateQuantity(int id, [FromBody] int quantity)
+        {
+            var result = await _business.UpdateQuantityAsync(id, quantity);
+            return result ? Ok() : BadRequest("Error al actualizar la cantidad");
+        }
+
+
     }
 
 }
