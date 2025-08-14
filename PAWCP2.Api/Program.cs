@@ -1,13 +1,15 @@
-using Microsoft.EntityFrameworkCore;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PAWCP2.Api.Services;
 using PAWCP2.Core.Manager;
 using PAWCP2.Core.Repositories;
+using PAWCP2.Core.Repositories.Implementations;
+using PAWCP2.Core.Repositories.Interfaces;
 using PAWCP2.Data;
 using PAWCP2.Repositories;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IUserBusiness, BusinessUser>();
 builder.Services.AddScoped<IRepositoryUser, RepositoryUser>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

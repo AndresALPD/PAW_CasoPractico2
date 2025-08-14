@@ -1,5 +1,13 @@
-using PAWCP2.Mvc.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PAWCP2.Api.Services;
+using PAWCP2.Core.Manager;
+using PAWCP2.Core.Repositories.Implementations;
+using PAWCP2.Core.Repositories.Interfaces;
+using PAWCP2.Data;
+using PAWCP2.Mvc.Service;
 using PAWCP2.Data; // Asegúrate de tener esta referencia para el DbContext
 using Microsoft.EntityFrameworkCore;
 using PAWCP2.Core.Manager;
@@ -10,6 +18,10 @@ using PAWCP2.Core.Repositories;
 using PAWCP2.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<PAWCP2DbContext>(opt =>
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 // Registrar servicios
 builder.Services.AddControllersWithViews();
@@ -22,6 +34,11 @@ builder.Services.AddDbContext<PAWCP2DbContext>(options =>
 builder.Services.AddScoped<IRepositoryUser, RepositoryUser>();
 builder.Services.AddScoped<IUserBusiness, BusinessUser>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+builder.Services.AddScoped<IUserRoleManager, UserRoleManager>();
+
 
 // Registro de servicios para FoodItems (VERIFICA LOS NAMESPACES)
 builder.Services.AddScoped<IFoodItemRepository, FoodItemRepository>();

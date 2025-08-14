@@ -10,7 +10,7 @@ using System.Security.Cryptography.X509Certificates;
 /// Interface for basic repository operations.
 /// </summary>
 /// <typeparam name="T">The type of entity.</typeparam>
-public interface IRepositoryBase<T>
+public interface IRepositoryBase<T> where T : class
 {
     /// <summary>
     /// Method that updates the entity if exists otherwise inserts a new record
@@ -82,10 +82,13 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
     /// <summary>
     /// Initializes a new instance of the <see cref="RepositoryBase{T}"/> class.
     /// </summary>
-    public RepositoryBase()
+    /// <remarks>
+    /// Se inyecta el DbContext por DI; no se debe crear manualmente.
+    /// </remarks>
+    protected RepositoryBase(PAWCP2DbContext ctx)
     {
-        _context = new PAWCP2DbContext();
-        DbSet<T> _sdbSet = _context.Set<T>();
+        _context = ctx ?? throw new ArgumentNullException(nameof(ctx));
+        DbSet = _context.Set<T>();
     }
 
     public async Task<bool> UpsertAsync(T entity, bool isUpdating)
