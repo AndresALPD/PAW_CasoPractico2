@@ -1,23 +1,36 @@
 using PAWCP2.Mvc.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using PAWCP2.Repositories;
+using PAWCP2.Data; // Asegúrate de tener esta referencia para el DbContext
+using Microsoft.EntityFrameworkCore;
 using PAWCP2.Core.Manager;
 using PAWCP2.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PAWCP2.Core.Repositories;
+using PAWCP2.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Registrar servicios
 builder.Services.AddControllersWithViews();
+
+// Configuración del DbContext (AGREGA ESTO)
+builder.Services.AddDbContext<PAWCP2DbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Registro de servicios de autenticación
 builder.Services.AddScoped<IRepositoryUser, RepositoryUser>();
 builder.Services.AddScoped<IUserBusiness, BusinessUser>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-// Nuevo servicio HTTP para FoodItem
+// Registro de servicios para FoodItems (VERIFICA LOS NAMESPACES)
+builder.Services.AddScoped<IFoodItemRepository, FoodItemRepository>();
+builder.Services.AddScoped<IBusinessFoodItem, BusinessFoodItem>();
+
+// Configuración HttpClient para FoodItemService
 builder.Services.AddHttpClient<IFoodItemService, FoodItemService>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7289/"); // Cambiar la ruta si es necesario
+    client.BaseAddress = new Uri("https://localhost:7289/");
 });
 
 // Configuración de sesión
@@ -34,10 +47,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Auth/AccessDenied";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
         options.SlidingExpiration = true;
-        options.Cookie.Name = "AuthCookie"; // Nombre específico para la cookie
+        options.Cookie.Name = "AuthCookie";
     });
 
-// Configuración de autorización
 builder.Services.AddAuthorization();
 
 // Elimina los filtros globales para evitar conflictos

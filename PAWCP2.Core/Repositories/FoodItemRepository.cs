@@ -13,6 +13,9 @@ namespace PAWCP2.Core.Repositories
     {
         Task<IEnumerable<FoodItem>> GetAllAsync();
         Task<IEnumerable<FoodItem>> GetByRoleIdAsync(int roleId);
+        Task<IEnumerable<string>> GetDistinctCategoriesAsync();
+        Task<IEnumerable<string>> GetDistinctBrandsAsync();
+        Task<IEnumerable<string>> GetDistinctSuppliersAsync();
     }
 
     public class FoodItemRepository : IFoodItemRepository
@@ -34,6 +37,33 @@ namespace PAWCP2.Core.Repositories
         {
             return await _context.FoodItems
                 .Where(f => f.RoleId == roleId)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<string>> GetDistinctCategoriesAsync()
+        {
+            return await _context.FoodItems
+                .Where(f => f.Category != null)
+                .Select(f => f.Category)
+                .Distinct()
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<string>> GetDistinctBrandsAsync()
+        {
+            return await _context.FoodItems
+                .Where(f => f.Brand != null)
+                .Select(f => f.Brand)
+                .Distinct()
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<string>> GetDistinctSuppliersAsync()
+        {
+            return await _context.FoodItems
+                .Where(f => f.Supplier != null)
+                .Select(f => f.Supplier)
+                .Distinct()
                 .ToListAsync();
         }
     }
