@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using PAWCP2.Models;
+using PAWCP2.Data;
 
 namespace PAWCP2.Repositories
 {
@@ -28,6 +29,10 @@ namespace PAWCP2.Repositories
 
     public class RepositoryUser : RepositoryBase<Users>, IRepositoryUser
     {
+        public RepositoryUser(PAWCP2DbContext ctx) : base(ctx)
+        {
+        }
+
         public async Task<bool> CheckBeforeSavingAsync(Users entity)
         {
             var exists = await ExistsAsync(entity);

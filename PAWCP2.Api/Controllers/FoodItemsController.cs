@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PAWCP2.Core.Manager;
 using PAWCP2.Models;
@@ -31,6 +31,7 @@ namespace PAWCP2.Api.Controllers
             var foodItems = await _business.GetByRoleAsync(roleId);
             return Ok(foodItems);
         }
+
         // PUT: api/fooditem/{id}/stock
         [HttpPut("{id}/stock")]
         public async Task<IActionResult> UpdateStock(int id, [FromBody] FoodItem item)
@@ -54,6 +55,7 @@ namespace PAWCP2.Api.Controllers
 
             return NoContent();
         }
+
         // PUT: api/fooditem/{id}/active
         [HttpPut("{id}/active")]
         public async Task<IActionResult> UpdateActive(int id, [FromBody] FoodItem item)
@@ -75,10 +77,29 @@ namespace PAWCP2.Api.Controllers
             return NoContent();
         }
 
+        [HttpPost("advancedsearch")]
+        public async Task<ActionResult<IEnumerable<FoodItem>>> AdvancedSearch([FromBody] FoodItemSearchCriteria criteria)
+        {
+            var foodItems = await _business.AdvancedSearchAsync(criteria);
+            return Ok(foodItems);
+        }
 
+        [HttpGet("categories")]
+        public async Task<ActionResult<IEnumerable<string>>> GetCategories()
+        {
+            return Ok(await _business.GetCategoriesAsync());
+        }
 
+        [HttpGet("brands")]
+        public async Task<ActionResult<IEnumerable<string>>> GetBrands()
+        {
+            return Ok(await _business.GetBrandsAsync());
+        }
 
-
+        [HttpGet("suppliers")]
+        public async Task<ActionResult<IEnumerable<string>>> GetSuppliers()
+        {
+            return Ok(await _business.GetSuppliersAsync());
+        }
     }
-
 }
